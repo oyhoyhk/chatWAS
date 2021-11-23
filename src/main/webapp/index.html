@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅 상담</title>
+    <style>
+        h1{ font-size:3rem; margin-top:200px; text-align:center;	}
+        .container{
+            width:900px;
+            height:300px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin:100px auto;
+        }
+        .box{
+            width:45%;
+            height:100%;
+            border-radius:20px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            font-size:3rem;
+            font-weight:bold;
+            cursor:pointer;
+            transition:.3s;
+        }
+        .customer{
+            border:3px solid #1942cabd;
+            color:#1942cabd;
+        }
+        .customer:hover{
+            background:#1942cabd;
+            color:white;
+        }
+        .admin{
+            border: 3px solid #ff4d4d;
+            color:#ff4d4d;
+        }
+
+        .admin:hover{
+            background:#ff4d4d;
+            color:white;
+        }
+    </style>
+    </head>
+    <body>
+        <h1>채팅 상담 WAS</h1>
+        <div class="container">
+            <div id="customer" class="customer box">고객용</div>
+            <div id="admin" class="admin box">상담사용</div>
+        </div>
+        <script>
+            const SERVER = 'http://localhost:8080';
+            const customer = document.getElementById('customer');
+            const admin=document.getElementById('admin');
+
+            customer.addEventListener('click',()=>{
+                window.location.href=SERVER+'/team/customer.html';
+            })
+            admin.addEventListener("click",()=>{
+                window.location.href=SERVER+'/team/admin.html';
+            })
+        </script>
+    </body>
+    </html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고객 전용 페이지</title>
+    <style>
+        h1 {
+            text-align: center;
+            margin-top: 150px;
+        }
+
+        .authContainer {
+            width: 500px;
+            height: 400px;
+            border-radius: 20px;
+            border: 3px solid #1942ca;
+            margin: 50px auto;
+            margin-bottom:10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .authContainer input {
+            border: none;
+            outline: none;
+            border-radius: 12px;
+            border: 2px solid #7091ff;
+            text-align: center;
+            font-size: 2rem;
+        }
+        .authContainer input::placeholder{
+            color:#7091ff;
+        }
+        #name {
+            width: 40%;
+            height: 60px;
+        }
+
+        .telBox {
+            width: 80%;
+            height: 60px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .telInput {
+            width: 20%;
+            height: 100%;
+        }
+
+        #start {
+            width: 35%;
+            height: 70px;
+            outline: None;
+            border: none;
+            background: none;
+            border-radius: 12px;
+            font-size: 1.8rem;
+            background: #1942ca;
+            color: white;
+            cursor: pointer;
+        }
+
+        .hyphen {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .info{
+        	width:480px;
+        	margin:0 auto;
+        	color:gray;
+        	text-align:right;
+        	font-size:1.2rem;
+        	display:flex;
+        	justify-content:flex-end;
+        	align-items:center;
+        }
+        .infoIcon{
+            width: 20px;
+    		height: 20px;
+    		border-radius: 100%;
+    		background: linear-gradient(315deg, red 50%, white);
+    		margin-left:5px;
+        }
+        .enable{
+        	background: linear-gradient(315deg, lightgreen 50%, white) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>고객 정보 입력</h1>
+    <div class="authContainer">
+        <input type="text" id="name" name="name" maxLength="7" placeholder="이름">
+        <div class="telBox">
+            <input class="telInput"
+                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text"
+                maxLength="3" placeholder="010" />
+            <div class="hyphen">-</div>
+            <input class="telInput"
+                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text"
+                maxLength="4" placeholder="1234" />
+            <div class="hyphen">-</div>
+            <input class="telInput"
+                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" type="text"
+                maxLength="4" placeholder="5678" />
+        </div>
+        <button id="start">상담하기</button>
+    </div>
+    <div class="info">
+    	<div class="infoText">상담 불가</div>
+    	<div class="infoIcon"></div>
+    </div>
+    <script>
+        const name = document.getElementById('name');
+        const tels = document.getElementsByClassName('telInput');
+        const start = document.getElementById('start');
+		const SERVER = 'http://localhost:8080/team';
+		let available = false;
+		fetch(SERVER+'/check_enable').then(res=>res.text()).then(res=>{
+			if(res==="available"){
+				available=true;
+				document.querySelector('.infoText').textContent="상담 가능";
+				document.querySelector('.infoIcon').classList.add("enable");
+			}
+		})
+        start.addEventListener('click', () => {
+            const tel = Array.from(tels).reduce((result, tel) => result += tel.value, '');
+            if (name.value === '' || (tel.length < 10 || tel.length > 11)) {
+                alert("이름과 전화번호를 정확하게 입력해주세요");
+                return;
+            };
+            if(!available){
+            	alert("지금은 상담이 불가합니다.")
+            	return;
+            }
+			fetch(SERVER + '/client_access?name='+encodeURI(name.value)+'&tel='+encodeURI(tel),{ 
+				method : "GET",
+				credentials:"same-origin",
+				}).then((res)=>res.text()).then(res =>{
+					console.log(res);
+					if(res==='available'){
+						window.sessionStorage.setItem('name',name.value);
+						window.sessionStorage.setItem('tel',tel);
+						window.location.href=SERVER+'/customer_chat.html';
+					}
+				});
+
+        })
+    </script>
+</body>
+
+</html>

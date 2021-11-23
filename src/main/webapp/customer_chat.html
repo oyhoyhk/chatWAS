@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>고객용 상담 페이지</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 50px;
+        }
+
+        .container {
+            width: 500px;
+            height: 600px;
+            border: 3px solid #6e6efa;
+            border-radius: 12px;
+            margin: 0 auto;
+            margin-top: 100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .chat {
+            width: 90%;
+            max-height:77%;
+            overflow:auto;
+            flex: 1;
+            margin: 20px 0;
+            border: 3px solid #babaff;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            overflow: auto;
+        }
+
+        .chat::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .chat::-webkit-scrollbar-thumb {
+            background-color: #7775ff;
+            border-radius: 5px;
+        }
+
+        .chat::-webkit-scrollbar-track {
+            border-radius: 5px;
+            background-color: #babaff;
+        }
+
+        .icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 100%;
+            font-size: .8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .contents {
+            max-width: 65%;
+            overflow-wrap:break-word;
+            border-radius: 10px;
+            padding: 10px;
+            margin-left: 10px;
+			margin-top:5px;   
+        }
+
+        .contents_client {
+            background: #f3f3ff;
+        }
+
+        .contents_manager {
+            background: #fff1f1;
+        }
+
+        .icon_client {
+            background: #8b8bfc;
+        }
+
+        .icon_manager {
+            background: #ff8e8e;
+        }
+
+        .chatLog {
+            width: 100%;
+            display: flex;
+            align-items: flex-start;
+            margin: 10px 0;
+            padding: 0 5px;
+        }
+
+        .chatLog_client {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .inputContainer {
+            margin: 20px 0;
+            width: 90%;
+            min-height: 10%;
+            max-height: 40%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+
+        #input {
+            height: 100%;
+            resize: none;
+            font-size: 1.2rem;
+            padding: 10px;
+            outline: none;
+            border: 3px solid #babaff;
+            border-radius: 12px;
+            background: #eeeeff;
+            overflow: hidden;
+        }
+
+        #input::-webkit-scrollbar {
+            margin-right: 5px;
+            width: 3px;
+            height: 80%;
+        }
+
+        #input::-webkit-scrollbar-thumb {
+            background: #6e6efa;
+        }
+
+        #input::-webkit-scrollbar-track {
+            background: #babaff;
+        }
+
+        #send {
+            margin-top: 5px;
+            width: 60px;
+            height: 40px;
+            border: none;
+            outline: none;
+            background: #babaff;
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.05rem;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <h1>고객용 상담 페이지</h1>
+    <div class="container">
+        <div class="chat">
+
+        </div>
+        <div class="inputContainer">
+            <textarea name="response" id="input" cols="32" rows="1"></textarea>
+            <button id="send">전송</button>
+        </div>
+    </div>
+    <script>
+        const name = window.sessionStorage.getItem("name");
+        const tel = window.sessionStorage.getItem("tel");
+        const info = name + ":::" + tel;
+
+        const chat = document.querySelector('.chat');
+
+        function createChatting(who, msg) {
+            const div = document.createElement('div');
+            div.classList.add('chatLog');
+            div.classList.add(`chatLog_${who}`);
+            const icon = document.createElement('div');
+            icon.classList.add('icon');
+            icon.classList.add(`icon_${who}`);
+            icon.textContent = who === 'client' ? '고객' : '상담';
+            const contents = document.createElement('div');
+            contents.classList.add('contents');
+            contents.classList.add(`contents_${who}`);
+            contents.textContent = msg;
+            div.appendChild(icon);
+            div.appendChild(contents);
+            return div;
+        }
+        const ws = new WebSocket("ws://localhost:8080/team/chatSocket/"+info);
+
+        ws.onopen = (message) => {
+        	chat.appendChild(createChatting('manager',`${name}님 안녕하세요.\n무엇을 도와드릴까요?`));
+        	console.log('ws open', message, info);
+        }
+        ws.onclose = (message) => {
+        	console.log('ws close')
+        };
+        ws.onerror = (message) => {
+        	console.log('ws error');
+        }
+        ws.onmessage = (message) => {
+        	console.log('ws message',message, message.data);
+        	chat.appendChild(createChatting('manager',message.data));
+        }
+
+        const inputContainer = document.querySelector('.inputContainer');
+        const input = document.getElementById('input');
+        const send = document.getElementById('send');
+        input.addEventListener('keydown', e => {
+            const {
+                clientHeight,
+                scrollHeight
+            } = e.target;
+            if (clientHeight < 200) {
+                if (clientHeight !== scrollHeight) {
+                    e.target.style.height = (scrollHeight + 10) + 'px';
+                }
+            } else {
+                e.target.style.height = 213 + 'px'
+                e.target.style.overflow = 'scroll'
+            }
+        });
+        send.addEventListener('click', () => {
+            if (input.value === '') {
+                alert('내용을 입력해주세요!');
+                return;
+            }
+            console.log(input.value);
+            chat.appendChild(createChatting('client',input.value));
+            chat.scrollTop = chat.scrollHeight-454;
+            ws.send(input.value);
+            input.value = '';
+            inputContainer.height = '10%'
+            input.style.height = '100%';
+            input.style.overflow = 'hidden';
+        })
+    </script>
+</body>
+
+</html>

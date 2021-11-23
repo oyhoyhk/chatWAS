@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Hello App Engine</title>
+    <style>
+    h1 {
+        font-size: 16pt;
+        background: #AAFFAA;
+        padding: 5px;
+    }
+    </style>
+    <script type="text/javascript">
+    function doAction() {
+        var req =  createRequest();
+        if (req == null) {
+            alert("실행이 되지 않는다!");
+            return;
+        }
+        var s = document.getElementById('text1').value;
+        req.open("post", "/team/testServlet", true);
+        req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        req.onreadystatechange = function(){
+            if (this.readyState == 4 && this.status == 200){
+                var msg = document.getElementById('msg');
+                console.log(this);
+                msg.innerHTML = this.responseText;
+            }
+        }
+        req.send("text1=" + encodeURIComponent(s));
+        msg.innerHTML = "<<< please wait... >>>";
+    }
+         
+       function createRequest(){
+        var httplist = [
+            function(){ return new XMLHttpRequest(); },
+            function(){ return new ActiveXObjct("Msxml2.XMLHTTP"); },
+            function(){ return new ActiveXObject("Microsoft.XMLHTTP"); }
+        ];
+        for(var i = 0;i < httplist.length;i++){
+            try {
+                var http = httplist[i]();
+                if (http != null) return http;
+            } catch(e){
+                continue;
+            }
+        }
+        return null;
+    }
+    </script>
+</head>
+<body>
+    <h1>Hello App Engine!</h1>
+    <p id="msg">정수 입력</p>
+    <p name="msg"></p>
+    <table>
+        <tr>
+            <td>입력</td>
+            <td><input type="text" id="text1"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button onclick="doAction();">송신</button></td>
+        </tr>
+    </table>
+</body>
+</html>

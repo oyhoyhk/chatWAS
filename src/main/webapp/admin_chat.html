@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="EUC-KR">
+    <title>관리자용 상담 페이지</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .container {
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+            margin-top: 80px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position:relative;
+        }
+        #chatCover{
+			position: absolute;
+		    left: 0;
+		    top: 0;
+		    width: 100%;
+		    height: 100%;
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    font-size: 3rem;
+		    color: white;
+		    background: rgba(0,0,0,.8);
+		    border-radius: 20px;
+		    user-select:none;
+        }
+
+        .chatContainer {
+            width: 55%;
+            height: 90%;
+            border: 3px solid #fd8383;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .chat {
+            width: 90%;
+            max-height:77%;
+            overflow:auto;
+            flex: 1;
+            margin: 20px 0;
+            border: 3px solid #ffaeae;
+            border-radius: 12px;
+        }
+        .chat::-webkit-scrollbar{
+            width:3px;
+        }
+        .chat::-webkit-scrollbar-thumb{
+            background:#ffaeae;
+            border-radius:5px;
+        }
+        .chat::-webkit-scrollbar-track{
+            background:#ffe6e6;
+            border-radius:5px;
+        }
+
+        .inputContainer {
+            margin: 20px 0;
+            width: 90%;
+            min-height: 10%;
+            max-height: 40%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        #input {
+            height: 100%;
+            resize: none;
+            font-size: 1.2rem;
+            padding: 10px;
+            outline: none;
+            border: 3px solid #ffaeae;
+            border-radius: 12px;
+            background: rgb(255, 243, 243);
+            overflow: hidden;
+        }
+
+        #input::-webkit-scrollbar {
+            margin-right: 5px;
+            width: 3px;
+            height: 80%;
+        }
+
+        #input::-webkit-scrollbar-thumb {
+            background: #fd8383;
+        }
+
+        #input::-webkit-scrollbar-track {
+            background: #ffaeae;
+        }
+
+        #send {
+            margin-top: 5px;
+            width: 60px;
+            height: 40px;
+            border: none;
+            outline: none;
+            background: #ffaeae;
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.05rem;
+        }
+
+        .listContainer {
+            width: 35%;
+            height: 90%;
+            border: 3px solid #fd8383;
+            border-radius: 12px;
+            padding: 10px;
+            overflow: auto;
+        }
+
+        .listContainer::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .listContainer::-webkit-scrollbar-thumb {
+            background: #ffcece;
+            border-radius: 5px;
+        }
+
+        .listContainer::-webkit-scrollbar-track {
+            background: #ff7b7b;
+            border-radius: 5px;
+        }
+
+        .clientList {
+            width: 95%;
+            height: 50px;
+            border-radius: 12px;
+            margin: 5px auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            cursor: pointer;
+            position:relative;
+        }
+        .newMessage{
+	        position: absolute;
+		    right: -4px;
+		    border: 3px solid #ff9292;
+		    width: 27px;
+		    height: 27px;
+		    border-radius: 100%;
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    background: #ff0303;
+		    color: white;
+		    bottom: 0;
+        	
+        }
+        
+        .clientList:hover .name {
+            background: #fff9ae !important;
+        }
+
+        .clientList:hover .tel {
+            background: #fff9ae !important;
+        }
+		.currentClient > .name{
+		   background: #fff9ae !important;
+		}
+		.currentClient > .tel{
+  		   background: #fff9ae !important;
+		}
+        
+
+        .name {
+            width: 30%;
+            height: 80%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #ffa8a8;
+            color: #ffa8a8;
+            font-weight: bold;
+            border-radius: 12px;
+        }
+
+        .tel {
+            width: 60%;
+            height: 80%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #ffa8a8;
+            color: #ffa8a8;
+            font-weight: bold;
+            border-radius: 12px;
+        }
+        .icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 100%;
+            font-size: .8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .contents {
+            max-width: 65%;
+            overflow-wrap:break-word;
+            border-radius: 10px;
+            padding: 10px;
+            margin-left: 10px;
+			margin-top:5px;   
+        }
+
+        .contents_client {
+            background: #f3f3ff;
+        }
+
+        .contents_manager {
+            background: #fff1f1;
+        }
+
+        .icon_client {
+            background: #8b8bfc;
+        }
+
+        .icon_manager {
+            background: #ff8e8e;
+        }
+
+        .chatLog {
+            width: 100%;
+            display: flex;
+            align-items: flex-start;
+            margin: 10px 0;
+            padding: 0 5px;
+        }
+
+        .chatLog_manager {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+        }
+	
+    </style>
+</head>
+
+<body>
+    
+    <h1>상담 페이지</h1>
+    <div class="container">
+        <div class="chatContainer">
+            <div class="chat"></div>
+            <div class="inputContainer">
+                <textarea name="response" id="input" cols="27" rows="1"></textarea>
+                <button id="send">전송</button>
+            </div>
+        </div>
+        <div class="listContainer">
+        </div>
+        <div id="chatCover">진행 중인 상담이 없습니다.</div>
+    </div>
+    <script>
+        const ws = new WebSocket("ws://localhost:8080/team/adminSocket");
+        const inputContainer = document.querySelector('.inputContainer');
+        const listContainer = document.querySelector('.listContainer');
+        const input = document.getElementById('input');
+        const send = document.getElementById('send');
+        let clientList = [];
+        let currentUser = null;
+        
+        const chat = document.querySelector('.chat');
+		const chatCover = document.getElementById('chatCover');
+        function createChatting(who, msg) {
+            const div = document.createElement('div');
+            div.classList.add('chatLog');
+            div.classList.add(`chatLog_${who}`);
+            const icon = document.createElement('div');
+            icon.classList.add('icon');
+            icon.classList.add(`icon_${who}`);
+            icon.textContent = who === 'client' ? '고객' : '상담';
+            const contents = document.createElement('div');
+            contents.classList.add('contents');
+            contents.classList.add(`contents_${who}`);
+            contents.textContent = msg;
+            div.appendChild(icon);
+            div.appendChild(contents);
+            return div;
+        }
+
+        Notification.requestPermission();
+        ws.onopen = (message) => {};
+        ws.onclose = (message) => {};
+        ws.onerror = (message) => {};
+        ws.onmessage = (message) => {
+            console.log(message);
+            const [action, name, tel, msg] = message.data.split(":::");
+            switch (action) {
+                case "visit": {
+                    const client = {
+                        name,
+                        tel,
+                        log: [],
+                        newMessage:0
+                    };
+					if(currentUser === null){
+						currentUser = client;
+						chatCover.style.display='none';
+					}
+                    if (!clientList.find(el => el.name === name && el.tel === tel)) {
+                        new Notification(`${name} 고객님과의 상담이 시작되었습니다.`);
+                    }
+                    clientList.push(client);
+                    showClientList(clientList);
+                    console.log(clientList);
+                    break;
+                }
+                case "bye": {
+                    clientList = clientList.filter(client => client.name !== name && client.tel !== tel);
+                    if(clientList.length===0){
+                    	chatCover.style.display='flex';
+                    	currentUser = null;
+                    }else{
+                    	currentUser = clientList[0];
+                    }
+                    showClientList(clientList);
+                    break;
+                }
+                case "message": {
+                    console.log(msg);
+                    const target = clientList.find(el=>el.name === name && el.tel === tel);
+                    target.log.push(['client',msg]);
+                    if(name === currentUser.name && tel === currentUser.tel){
+                    	console.log(clientList);
+                    	chat.appendChild(createChatting('client',msg));
+                        chat.scrollTop=chat.scrollHeight-400;
+                    }else{
+                    	console.log(target);
+                    	target.newMessage+=1;
+                    	console.log(target, clientList)
+                    	const newMsg = document.getElementById(target.name+':::'+target.tel);
+                    	newMsg.style.display="flex";
+                    	newMsg.textContent = target.newMessage;
+                    	showClientList(clientList);
+                    }
+                    break;
+                }
+            }
+        }
+
+        function showClientList(list) {
+            listContainer.innerHTML = '';
+            list.forEach(client => {
+                listContainer.appendChild(addNewClient(client));
+            })
+        }
+
+        function addNewClient(client) {
+            const div = document.createElement('div');
+            div.classList.add('clientList')
+            const name = document.createElement('name');
+            name.classList.add('name');
+            name.textContent = client.name;
+            div.appendChild(name);
+            const tel = document.createElement('tel');
+            tel.classList.add('tel');
+            tel.textContent = client.tel;
+            div.appendChild(tel);
+            if(client.name === currentUser.name && client.tel === currentUser.tel){
+            	div.classList.add('currentClient');
+            }
+            
+            const newMessage = document.createElement('div');
+            newMessage.classList.add('newMessage');
+            newMessage.textContent = client.newMessage;
+            newMessage.id=client.name+':::'+client.tel;
+            if(client.newMessage===0) newMessage.style.display='none';
+            div.appendChild(newMessage);
+            
+            
+            listContainer.appendChild(div);
+            div.addEventListener('click', () => {
+            	if(client.name === currentUser.name && client.tel === currentUser.tel) return;
+            	document.querySelector('.currentClient').classList.remove('currentClient');
+            	div.classList.add('currentClient');
+            	document.getElementById(client.name+':::'+client.tel).style.display='none';
+            	currentUser = client;
+            	openChattingLogs(currentUser.log);
+            	console.log(currentUser);
+            	clientList=clientList.map(el=>{
+            		if(el.name===client.name && el.tel === el.tel){
+            			el.newMessage=0;
+            		}
+            		return el;
+            	})
+            })
+            return div;
+        }
+		function openChattingLogs(logs){
+			chat.innerHTML='';
+			logs.forEach(log => {
+				chat.appendChild(createChatting(log[0],log[1]));
+			})
+		}
+        input.addEventListener('keydown', e => {
+            const {
+                clientHeight,
+                scrollHeight
+            } = e.target;
+            if (clientHeight < 200) {
+                if (clientHeight !== scrollHeight) {
+                    e.target.style.height = (scrollHeight + 10) + 'px';
+                }
+            } else {
+                e.target.style.height = 213 + 'px'
+                e.target.style.overflow = 'scroll'
+            }
+        });
+        send.addEventListener('click', () => {
+            if (input.value === '') {
+                alert('내용을 입력해주세요!');
+                return;
+            }
+            currentUser.log.push(['manager',input.value]);
+            chat.appendChild(createChatting('manager',input.value))
+            chat.scrollTop = chat.scrollHeight-400;
+            ws.send(currentUser.name+':::'+currentUser.tel+'#####'+input.value);
+            input.value = '';
+            inputContainer.height = '10%'
+            input.style.height = '100%';
+            input.style.overflow = 'hidden';
+        })
+    </script>
+</body>
+
+</html>
